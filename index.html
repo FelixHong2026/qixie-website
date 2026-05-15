@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>齐谐科技 - Qixie Technology</title>
+    <meta name="description" content="齐谐科技 - 致力于互联网、新媒体、AI、外包、市场策划等领域的融合创新">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --card: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+        /* Hero */
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 80px 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+
+        .hero .tagline {
+            font-size: 1.125rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto 32px;
+            line-height: 1.8;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.2);
+            color: #60a5fa;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        /* Sections */
+        section { padding: 80px 0; }
+
+        section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-top: -32px;
+            margin-bottom: 48px;
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .service-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .service-card .icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* About */
+        .about-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--text-light);
+        }
+
+        /* Contact */
+        .contact-info {
+            text-align: center;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 48px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .contact-info p {
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .contact-info .email {
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact-info .email:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px 24px;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            section { padding: 48px 0; }
+            .services-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <div class="badge">齐谐科技 · Qixie Technology</div>
+            <h1>连接创新，驱动增长</h1>
+            <p class="subtitle">互联网 · AI · 新媒体 · 市场策划</p>
+            <p class="tagline">
+                我们是一家致力于融合创新的科技公司，在互联网、人工智能、新媒体运营、外包服务和市场策划领域为客户提供专业解决方案。
+            </p>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2>业务领域</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="icon">🌐</div>
+                    <h3>互联网开发</h3>
+                    <p>网站建设、Web 应用开发、小程序开发，助力企业数字化转型</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">🤖</div>
+                    <h3>AI 解决方案</h3>
+                    <p>智能客服、自动化流程、AI Agent 部署，以人工智能赋能业务效率</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">📱</div>
+                    <h3>新媒体运营</h3>
+                    <p>内容策划、社媒运营、品牌推广，打造有影响力的数字品牌形象</p>
+                </div>
+                <div class="service-card">
+                    <div class="icon">📊</div>
+                    <h3>市场策划</h3>
+                    <p>品牌战略、营销方案、市场调研，以数据驱动精准营销决策</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2>关于齐谐</h2>
+            <p class="section-subtitle">小投入，大视野</p>
+            <div class="about-content">
+                <p>
+                    齐谐科技是一家创新型实体公司，拥有营业执照、注册地址、办公场地和银行账户。
+                    我们秉持"小投入，大视野"的理念，在国内外互联网、新媒体、AI 技术、
+                    外包服务与市场策划等交叉领域持续探索市场机会。
+                </p>
+                <br>
+                <p>
+                    我们的团队由分布在家庭局域网上的多个智能体组成，以高效、自动化的方式
+                    为客户提供高质量的服务交付。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>联系我们</h2>
+            <div class="contact-info">
+                <p>如有合作意向，欢迎通过以下方式与我们联系</p>
+                <br>
+                <p>邮箱：<a href="mailto:contact@qixie.tech" class="email">contact@qixie.tech</a></p>
+                <br>
+                <p style="font-size:0.9rem; color:#94a3b8;">
+                    齐谐科技 · Qixie Technology
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 齐谐科技 Qixie Technology. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
