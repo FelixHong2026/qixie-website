@@ -52,7 +52,104 @@ services:
     networks:
       - qixie-net
 
+  # ========== 监控告警 (Sprint 4, 可选启动) ==========
+
+  # Docker 容器指标采集
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: qixie-cadvisor
+    restart: unless-stopped
+    profiles:
+      - monitoring
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    networks:
+      - qixie-net
+
+  # 主机指标采集
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: qixie-node-exporter
+    restart: unless-stopped
+    profiles:
+      - monitoring
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+    networks:
+      - qixie-net
+
+  # ========== 待 CMP-129 集成: 全栈服务占位 ==========
+
+  # --- API 服务 (FastAPI) ---
+  # 由 CMP-129 完成核心代码后取消注释并配置
+  # api:
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   container_name: qixie-api
+  #   restart: unless-stopped
+  #   env_file: .env
+  #   environment:
+  #     - DATABASE_URL=postgresql://qixie:${DB_PASSWORD}@db:5432/qixie
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   expose:
+  #     - "8000"
+  #   networks:
+  #     - qixie-net
+
+  # --- 前端 (React/Vite) ---
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: qixie-frontend
+  #   restart: unless-stopped
+  #   expose:
+  #     - "80"
+  #   networks:
+  #     - qixie-net
+
+  # --- 数据库 (PostgreSQL + pgvector) ---
+  # db:
+  #   image: pgvector/pgvector:pg16
+  #   container_name: qixie-db
+  #   restart: unless-stopped
+  #   shm_size: 256m
+  #   environment:
+  #     - POSTGRES_USER=qixie
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD:?必须设置 DB_PASSWORD}
+  #     - POSTGRES_DB=qixie
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   expose:
+  #     - "5432"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U qixie"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - qixie-net
+
 volumes:
+  pgdata:
 
 networks:
   qixie-net:
