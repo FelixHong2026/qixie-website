@@ -9,7 +9,7 @@ echo "=== 拉取最新代码 ==="
 git pull origin main
 
 echo "=== 构建并启动服务 ==="
-docker compose build
+docker compose build --network host
 docker compose up -d
 
 echo "=== 清理旧镜像 ==="
