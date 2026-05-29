@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            cd ~/qixie-site
+            cd ${{ secrets.DEPLOY_PATH || '~/qixie' }}
             git pull origin main
             docker compose build --network host
             docker compose up -d
