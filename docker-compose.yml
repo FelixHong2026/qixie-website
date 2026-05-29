@@ -17,6 +17,8 @@ services:
     depends_on:
       qixie-site:
         condition: service_started
+      api:
+        condition: service_started
     networks:
       - qixie-net
 
@@ -30,7 +32,7 @@ services:
     expose:
       - "80"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -93,60 +95,73 @@ services:
     networks:
       - qixie-net
 
-  # ========== 待 CMP-129 集成: 全栈服务占位 ==========
+  # ========== 全栈服务 (CMP-129 集成) ==========
 
   # --- API 服务 (FastAPI) ---
-  # 由 CMP-129 完成核心代码后取消注释并配置
-  # api:
-  #   build:
-  #     context: ./api
-  #     dockerfile: Dockerfile
-  #   container_name: qixie-api
-  #   restart: unless-stopped
-  #   env_file: .env
-  #   environment:
-  #     - DATABASE_URL=postgresql://qixie:${DB_PASSWORD}@db:5432/qixie
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   expose:
-  #     - "8000"
-  #   networks:
-  #     - qixie-net
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: qixie-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://qixie:${DB_PASSWORD}@db:5432/ai_chinese
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - qixie-net
 
-  # --- 前端 (React/Vite) ---
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: qixie-frontend
-  #   restart: unless-stopped
-  #   expose:
-  #     - "80"
-  #   networks:
-  #     - qixie-net
+  # --- 前端 (React/Vite, Nginx 生产构建) ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: qixie-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - qixie-net
 
   # --- 数据库 (PostgreSQL + pgvector) ---
-  # db:
-  #   image: pgvector/pgvector:pg16
-  #   container_name: qixie-db
-  #   restart: unless-stopped
-  #   shm_size: 256m
-  #   environment:
-  #     - POSTGRES_USER=qixie
-  #     - POSTGRES_PASSWORD=${DB_PASSWORD:?必须设置 DB_PASSWORD}
-  #     - POSTGRES_DB=qixie
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   expose:
-  #     - "5432"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U qixie"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   networks:
-  #     - qixie-net
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: qixie-db
+    restart: unless-stopped
+    shm_size: 256m
+    environment:
+      - POSTGRES_USER=qixie
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?必须设置 DB_PASSWORD}
+      - POSTGRES_DB=ai_chinese
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qixie -d ai_chinese"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - qixie-net
 
 volumes:
   pgdata:

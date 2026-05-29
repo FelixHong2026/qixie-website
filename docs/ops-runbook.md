@@ -7,14 +7,26 @@
 | 服务器 | 192.168.1.223 (OpenClaw Gateway) |
 | 域名 | felix2026.cc.cd |
 | 管理面板 | openclaw.qixie.tech → Portainer :9000 |
-| Docker 版本 | 29.5.1 |
+| OS | Ubuntu 24.04 LTS (Noble) |
+| 内核 | Linux x86_64, Cgroup v2 |
+| CPU | 2 核 |
+| 内存 | 7.8 GiB (可用 ~4.6 GiB) |
+| 磁盘 | 57 GiB (已用 28 GiB, 剩余 28 GiB) |
+| Docker 版本 | 29.5.1 (Community) |
 | Compose 版本 | v5.1.3 (plugin) |
-| 操作系统 | Linux (Ubuntu/Debian) |
+| 存储驱动 | overlayfs |
+| 防火墙 | **未启用** (需配置) |
 
 ## 快速启动
 
 ### 首次部署
 
+方式一 — 一键初始化脚本（交互式）:
+```bash
+bash scripts/init-server.sh
+```
+
+方式二 — 手动步骤:
 ```bash
 # 1. 克隆仓库
 cd /home/felix
@@ -97,6 +109,12 @@ docker compose --profile monitoring up -d
 ## 健康检查
 
 ```bash
+# 全面健康检查 (6 项: Docker/容器/HTTP/SSL/磁盘/内存)
+bash scripts/health-check.sh
+
+# 失败时发送 Webhook 通知
+bash scripts/health-check.sh --webhook https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY
+
 # Nginx 代理层
 curl -s http://felix2026.cc.cd/health
 # 预期: "OK\n"
@@ -107,14 +125,29 @@ curl -sI https://felix2026.cc.cd | head -5
 
 # 所有容器健康状态
 docker ps --filter "health=healthy"
+
+# 定时检查 (crontab)
+# */5 * * * * /home/felix/qixie/scripts/health-check.sh --webhook <URL> >> /var/log/qixie-health.log 2>&1
 ```
 
 ## 备份
 
 ### 数据库 (待 CMP-129 PostgreSQL 启用后)
 
+一键备份:
+```bash
+bash scripts/backup-db.sh
+```
+
+或手动:
 ```bash
 docker compose exec db pg_dump -U qixie qixie > backup_$(date +%Y%m%d).sql
+```
+
+定时备份 (crontab -e):
+```cron
+# 每天凌晨 3 点备份，保留 30 天
+0 3 * * * /home/felix/qixie/scripts/backup-db.sh >> /var/log/qixie-backup.log 2>&1
 ```
 
 ### 证书备份
@@ -171,8 +204,16 @@ sudo journalctl --vacuum-size=200M
 
 ## 安全建议
 
-1. **防火墙**: 只开放 80/443 端口; 其他服务端口绑定 127.0.0.1
+1. **防火墙**: 当前**未启用**。立即配置:
+   ```bash
+   sudo ufw allow 22/tcp      # SSH
+   sudo ufw allow 80/tcp      # HTTP
+   sudo ufw allow 443/tcp     # HTTPS
+   sudo ufw --force enable
+   sudo ufw status verbose
+   ```
 2. **SSH**: 禁用密码登录, 仅使用密钥
-3. **自动更新**: 配置 unattended-upgrades 安全补丁
-4. **日志审计**: 定期检查 Docker 和 Nginx 日志
-5. **证书**: certbot 自动续期 + 每月手动检查
+3. **Docker 暴露端口**: 非必需端口勿绑定 0.0.0.0; 管理端口 (如 9000/8081/9100) 在 Nginx 反向代理后应仅暴露 80/443
+4. **自动更新**: 配置 unattended-upgrades 安全补丁
+5. **日志审计**: 定期检查 Docker 和 Nginx 日志
+6. **证书**: certbot 自动续期 + 每月手动检查
